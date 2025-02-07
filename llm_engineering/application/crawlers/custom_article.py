@@ -1,7 +1,7 @@
-from urllib.parse import urlparse
+from urllib.parse import urlparse 
 
-from langchain_community.document_loaders import AsyncHtmlLoader
-from langchain_community.document_transformers.html2text import Html2TextTransformer
+from langchain_community.document_loaders import AsyncHtmlLoader  # fetches multiple pages efficienctly
+from langchain_community.document_transformers.html2text import Html2TextTransformer  # removes HTMl tags and extracts content
 from loguru import logger
 
 from llm_engineering.domain.documents import ArticleDocument
@@ -25,11 +25,21 @@ class CustomArticleCrawler(BaseCrawler):
         logger.info(f"Starting scrapping article: {link}")
 
         loader = AsyncHtmlLoader([link])
-        docs = loader.load()
+        docs = loader.load()  # fetched HTMl content is stored in docs
 
-        html2text = Html2TextTransformer()
-        docs_transformed = html2text.transform_documents(docs)
+        html2text = Html2TextTransformer()  
+        docs_transformed = html2text.transform_documents(docs)  # HTMl taggs are removed
         doc_transformed = docs_transformed[0]
+
+        # Examples of doc_transformed
+        # {
+        #     "page_content": "Welcome to AI Trends\nArtificial intelligence is evolving rapidly...",
+        #     "metadata": {
+        #         "title": "AI Trends",
+        #         "description": "Latest Developments in AI",
+        #         "language": "en"
+        #     }
+        # }
 
         content = {
             "Title": doc_transformed.metadata.get("title"),
@@ -37,6 +47,7 @@ class CustomArticleCrawler(BaseCrawler):
             "Content": doc_transformed.page_content,
             "language": doc_transformed.metadata.get("language"),
         }
+
 
         parsed_url = urlparse(link)
         platform = parsed_url.netloc

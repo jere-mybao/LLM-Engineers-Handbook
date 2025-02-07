@@ -11,18 +11,23 @@ class UserDocument(NoSQLBaseDocument):
     first_name: str
     last_name: str
 
+    # stored in MongoDB's user collection
     class Settings:
         name = "users"
 
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    # user = UserDocument(first_name="Alice", last_name="Smith")
+    # user.save() -> Automatically goes into "users" collection
+    # print(user.full_name) ->  Alice Smith
 
 
 class Document(NoSQLBaseDocument, ABC):
     content: dict
     platform: str
-    author_id: UUID4 = Field(alias="author_id")
+    author_id: UUID4 = Field(alias="author_id") 
     author_full_name: str = Field(alias="author_full_name")
 
 

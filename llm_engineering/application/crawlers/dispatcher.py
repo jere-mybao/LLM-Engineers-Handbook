@@ -14,9 +14,9 @@ class CrawlerDispatcher:
     def __init__(self) -> None:
         self._crawlers = {}
 
-    @classmethod
-    def build(cls) -> "CrawlerDispatcher":
-        dispatcher = cls()
+    @classmethod  # factory method that operates on the class itself
+    def build(cls) -> "CrawlerDispatcher":  # cls refers to the class
+        dispatcher = cls()  # creates instance of the class; note that it is not CrawlerDispatcher()
 
         return dispatcher
 

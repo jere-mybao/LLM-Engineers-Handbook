@@ -1,5 +1,5 @@
 import time
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod  # Abstract Base Class
 from tempfile import mkdtemp
 
 import chromedriver_autoinstaller
@@ -14,26 +14,26 @@ from llm_engineering.domain.documents import NoSQLBaseDocument
 chromedriver_autoinstaller.install()
 
 
-class BaseCrawler(ABC):
-    model: type[NoSQLBaseDocument]
+class BaseCrawler(ABC):  # cannot create an instance of BaseCrawler
+    model: type[NoSQLBaseDocument]  # model must be a subclass of NoSQLBaseDocument
 
-    @abstractmethod
+    @abstractmethod  # every subclass must implemenet this method
     def extract(self, link: str, **kwargs) -> None: ...
 
-
-class BaseSeleniumCrawler(BaseCrawler, ABC):
+# used for LinkedIn and Medium (need Selenium to collect the data, automating browsers)
+class BaseSeleniumCrawler(BaseCrawler, ABC):  # inherits from BaseCrawler to maintain abstract structure requiring extract()
     def __init__(self, scroll_limit: int = 5) -> None:
-        options = webdriver.ChromeOptions()
+        options = webdriver.ChromeOptions()  # creates a Chrome Webdriver instance
 
-        options.add_argument("--no-sandbox")
-        options.add_argument("--headless=new")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--log-level=3")
+        options.add_argument("--no-sandbox")  # disables sandboxing (needed to run inside containers)
+        options.add_argument("--headless=new")  # runs Chrome without a visible UI
+        options.add_argument("--disable-dev-shm-usage")  # prevents shared memory crashes in Docker/Linux
+        options.add_argument("--log-level=3")  # reduces logging output from Chrome
         options.add_argument("--disable-popup-blocking")
         options.add_argument("--disable-notifications")
         options.add_argument("--disable-extensions")
         options.add_argument("--disable-background-networking")
-        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--ignore-certificate-errors")  # ignore SSL errors on insecure sites
         options.add_argument(f"--user-data-dir={mkdtemp()}")
         options.add_argument(f"--data-path={mkdtemp()}")
         options.add_argument(f"--disk-cache-dir={mkdtemp()}")
@@ -45,15 +45,17 @@ class BaseSeleniumCrawler(BaseCrawler, ABC):
         self.driver = webdriver.Chrome(
             options=options,
         )
-
+    
+    # calls a placeholder method that can be overridden by subclasses to add more configurations
     def set_extra_driver_options(self, options: Options) -> None:
         pass
 
+    # can be overridden by subclasses to handle authentication
     def login(self) -> None:
         pass
 
     def scroll_page(self) -> None:
-        """Scroll through the LinkedIn page based on the scroll limit."""
+        """Scroll through a webpage based on the scroll limit."""
         current_scroll = 0
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         while True:

@@ -7,7 +7,7 @@ from llm_engineering.domain.documents import UserDocument
 
 
 @step
-def get_or_create_user(user_full_name: str) -> Annotated[UserDocument, "user"]:
+def get_or_create_user(user_full_name: str) -> Annotated[UserDocument, "user"]:  # Annotated[T, "metadata"] allows adding extra info
     logger.info(f"Getting or creating user: {user_full_name}")
 
     first_name, last_name = utils.split_user_full_name(user_full_name)

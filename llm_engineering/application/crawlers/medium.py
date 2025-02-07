@@ -1,10 +1,26 @@
 from bs4 import BeautifulSoup
+
 from loguru import logger
 
 from llm_engineering.domain.documents import ArticleDocument
 
 from .base import BaseSeleniumCrawler
 
+# Selenium + BeautifulSoup vs. AsyncHtmlLoader + Html2TextTransformer
+
+# Selenium + BeautifulSoup:
+#    - Used for JavaScript-rendered pages (e.g., Medium, LinkedIn).
+#    - Requires scrolling to load dynamic content.
+#    - Extracts specific elements like titles and paragraphs.
+
+# AsyncHtmlLoader + Html2TextTransformer**:
+#    - Ideal for static HTML pages** (e.g., Wikipedia, News sites).
+#    - Works faster than Selenium (no browser overhead).
+#    - Automatically extracts metadata
+
+# When to Use Which?
+# - Use Selenium for dynamic sites (Medium, Facebook, LinkedIn).
+# - Use AsyncHtmlLoader for static sites (Wikipedia, blogs, news articles).
 
 class MediumCrawler(BaseSeleniumCrawler):
     model = ArticleDocument
@@ -29,7 +45,8 @@ class MediumCrawler(BaseSeleniumCrawler):
         subtitle = soup.find_all("h2", class_="pw-subtitle-paragraph")
 
         data = {
-            "Title": title[0].string if title else None,
+            # <h1 class="pw-post-title">The Future of AI</h1> -> "The Future of AI"
+            "Title": title[0].string if title else None, 
             "Subtitle": subtitle[0].string if subtitle else None,
             "Content": soup.get_text(),
         }

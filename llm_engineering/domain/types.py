@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum  # ensures that all enums are strings
 
 
 class DataCategory(StrEnum):
@@ -12,4 +12,4 @@ class DataCategory(StrEnum):
 
     POSTS = "posts"
     ARTICLES = "articles"
-    REPOSITORIES = "repositories"
+    REPOSITORIES = "repositories"  # would fail if REPOSITORIES = 1
